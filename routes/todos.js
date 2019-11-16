@@ -34,7 +34,7 @@ router.post('/', async (req, res, next) => {
 
   try {
     const todo = await Todos.createTodo(newTodo);
-    res.status(201).json({
+    res.status(200).json({
       payload: todo,
       err: false
     })
@@ -51,7 +51,9 @@ router.post('/', async (req, res, next) => {
 });
 
 router.get('/:id', async (req, res, next) => {
-  const { id } = req.params;
+  const {
+    id
+  } = req.params;
 
   try {
     const todo = await Todos.getTodo(id);
@@ -75,25 +77,32 @@ router.get('/:id', async (req, res, next) => {
 });
 
 router.delete('/:id', async (req, res, next) => {
-  const { id } = req.params;
+  const {
+    id
+  } = req.params;
 
   try {
     const deletedTodo = await Todos.removeTodo(id);
-    if (deletedTodo) {
+    if (deletedTodo.length) {
       return res.json({
         payload: deletedTodo,
         err: false
       })
     }
 
-    res.status(418).json({})
+    res.status(404).json({
+      payload: "Todo not found",
+      err: true
+    })
   } catch (err) {
     next(err)
   }
 });
 
 router.patch('/:id', async (req, res, next) => {
-  const { id } = req.params;
+  const {
+    id
+  } = req.params;
   const todo_edits = req.body
   try {
     const updatedTodo = await Todos.updateTodo(id, todo_edits);
@@ -118,7 +127,9 @@ router.patch('/:id', async (req, res, next) => {
 });
 
 router.put('/:id', async (req, res, next) => {
-  const { id } = req.params;
+  const {
+    id
+  } = req.params;
   const todo_edits = req.body
   const expectedProps = ["owner", "text", "completed"];
   const missingProps = helpers.missingProps(expectedProps, todo_edits)

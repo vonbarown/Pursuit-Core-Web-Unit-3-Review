@@ -1,4 +1,8 @@
-const { db, helpers, errors } = require("../db/index.js");
+const {
+  db,
+  helpers,
+  errors
+} = require("../db/index.js");
 
 const optionalCol = col => ({
   name: col,
@@ -6,7 +10,10 @@ const optionalCol = col => ({
 })
 
 const getAllTodos = async (params) => {
-  let { owner, completed } = params
+  let {
+    owner,
+    completed
+  } = params
   let SQL = "SELECT * FROM todos"
 
   if (owner && completed) {
@@ -30,7 +37,9 @@ const getTodo = async (id) => {
   let todo;
 
   try {
-    todo = await db.one("SELECT * FROM todos WHERE id = $/id/", { id });
+    todo = await db.one("SELECT * FROM todos WHERE id = $/id/", {
+      id
+    });
     return todo;
   } catch (err) {
     if (err instanceof errors.QueryResultError &&
@@ -60,7 +69,9 @@ const createTodo = async (todo) => {
 const removeTodo = async (id) => {
   let todo;
   try {
-    todo = await db.any(`DELETE FROM todos`, { id });
+    todo = await db.any(`DELETE FROM todos where id = $/id/ RETURNING *`, {
+      id
+    });
     return todo;
   } catch (err) {
     if (err instanceof errors.QueryResultError &&
@@ -77,20 +88,23 @@ const updateTodo = async (id, todoEdits) => {
     optionalCol("text"),
     optionalCol("completed"),
     optionalCol("owner"),
-  ], { table: "todos" })
+  ], {
+    table: "todos"
+  })
 
   const updateQuery = `${helpers.update(todoEdits, columnSet)} 
     WHERE id = $/id/ RETURNING *`;
 
   let todo;
   try {
-    todo = await db.one(updateQuery, { id })
+    todo = await db.one(updateQuery, {
+      id
+    })
     return todo
   } catch (err) {
     if (
       (err instanceof errors.QueryResultError &&
-        err.code === errors.queryResultErrorCode.noData)
-      ||
+        err.code === errors.queryResultErrorCode.noData) ||
       (err.code === "23503") //New owner not in table 
     ) {
       todo = false

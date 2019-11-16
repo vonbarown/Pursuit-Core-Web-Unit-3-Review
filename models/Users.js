@@ -1,4 +1,7 @@
-const { db, errors } = require('../db/index.js');
+const {
+  db,
+  errors
+} = require('../db/index.js');
 
 const createUser = async (user) => {
   try {
@@ -10,7 +13,6 @@ const createUser = async (user) => {
     if (err.code === "23505" && err.detail.includes("already exists")) {
       let customErr = "Username not available. Please try a different one.";
       err = customErr;
-      throw customErr;
     }
     throw err;
   }
